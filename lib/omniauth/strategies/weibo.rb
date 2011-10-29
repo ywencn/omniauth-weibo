@@ -8,10 +8,17 @@ module OmniAuth
       option :sign_in, true
       def initialize(*args)
         super
+        options.client_options = {
+                  :access_token_path => '/oauth/access_token',
+                  :authorize_path => '/oauth/authorize',
+                  :realm => 'OmniAuth',
+                  :request_token_path => '/oauth/request_token',
+                  :site => 'http://api.t.sina.com.cn',
+                }
       end
 
       def consumer
-        consumer = ::OAuth::Consumer.new(options.consumer_key, options.consumer_secret, {:site => 'http://api.t.sina.com.cn', :authorize_path => '/oauth/authorize' })
+        consumer = ::OAuth::Consumer.new(options.consumer_key, options.consumer_secret, options.client_options)
         consumer.http.open_timeout = options.open_timeout if options.open_timeout
         consumer.http.read_timeout = options.read_timeout if options.read_timeout
         consumer
@@ -43,7 +50,11 @@ module OmniAuth
         request_token = ::OAuth::RequestToken.new(consumer, session['oauth'][name.to_s].delete('request_token'), session['oauth'][name.to_s].delete('request_secret'))
 
         opts = {}
-        opts[:oauth_verifier] = request['oauth_verifier']
+        if session['oauth'][name.to_s]['callback_confirmed']
+          opts[:oauth_verifier] = request['oauth_verifier']
+        else
+          opts[:oauth_callback] = callback_url
+        end
 
         @access_token = request_token.get_access_token(opts)
         super
