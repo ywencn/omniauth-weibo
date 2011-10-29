@@ -6,14 +6,12 @@ module OmniAuth
     class Weibo < OmniAuth::Strategies::OAuth
       option :name, 'weibo'
       option :sign_in, true
-
       def initialize(*args)
         super
-        options.client_options[:authorize_path] = '/oauth/authorize' if options.sign_in?
       end
 
       def consumer
-        consumer = ::OAuth::Consumer.new(options.consumer_key, options.consumer_secret, {:site => 'http://api.t.sina.com.cn'}.merge(options.client_options))
+        consumer = ::OAuth::Consumer.new(options.consumer_key, options.consumer_secret, {:site => 'http://api.t.sina.com.cn', :authorize_path => '/oauth/authorize' })
         consumer.http.open_timeout = options.open_timeout if options.open_timeout
         consumer.http.read_timeout = options.read_timeout if options.read_timeout
         consumer
