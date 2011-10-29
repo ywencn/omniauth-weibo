@@ -8,10 +8,17 @@ Gem::Specification.new do |s|
   s.authors     = ["Scott Ballantyne"]
   s.email       = ["ussballantyne@gmail.com"]
   s.homepage    = ""
-  s.summary     = %q{TODO: Write a gem summary}
-  s.description = %q{TODO: Write a gem description}
+  s.summary     = %q{an omniauth strategy for sina weibo}
+  s.description = %q{an omniauth strategy for sina weibo}
 
   s.rubyforge_project = "omniauth-weibo"
+  
+  s.add_runtime_dependency     'omniauth', '~> 1.0.0.rc2'
+  s.add_runtime_dependency     'oauth'
+  s.add_development_dependency 'rspec', '~> 2.6'
+  s.add_development_dependency 'webmock'
+  s.add_development_dependency 'simplecov'
+  s.add_development_dependency 'rack-test'
 
   s.files         = `git ls-files`.split("\n")
   s.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")
