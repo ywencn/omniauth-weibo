@@ -12,13 +12,10 @@ Gem::Specification.new do |s|
   s.description = %q{an omniauth strategy for sina weibo}
 
   s.rubyforge_project = "omniauth-weibo"
-  
-  s.add_runtime_dependency     'omniauth', '~> 1.0.0.rc2'
-  s.add_runtime_dependency     'oauth'
-  s.add_development_dependency 'rspec', '~> 2.6'
-  s.add_development_dependency 'webmock'
-  s.add_development_dependency 'simplecov'
-  s.add_development_dependency 'rack-test'
+
+  s.add_dependency 'omniauth', '~> 1.0.0.rc2'
+  s.add_dependency 'omniauth-oauth', '~> 1.0.0.rc2'
+  s.add_dependency 'multi_json'
 
   s.files         = `git ls-files`.split("\n")
   s.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")
