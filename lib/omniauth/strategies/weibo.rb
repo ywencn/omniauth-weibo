@@ -34,7 +34,7 @@ module OmniAuth
           :description => raw_info['description'],
           :urls => {
             'Website' => raw_info['url'],
-            'Weibo' => 'http://weibo.com/' + raw_info['id'].to_s,
+            'Weibo' => 'http://weibo.com/' + raw_info['id'].to_s
           }
         }
       end
