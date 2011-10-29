@@ -23,8 +23,6 @@ module OmniAuth
         consumer
       end
 
-      uid { access_token.params[:id] }
-
       info do
         {
           :nickname => raw_info['screen_name'],
@@ -39,9 +37,6 @@ module OmniAuth
         }
       end
 
-      extra do
-        { :raw_info => raw_info }
-      end
 
       #taken from https://github.com/intridea/omniauth/blob/0-3-stable/oa-oauth/lib/omniauth/strategies/oauth/tsina.rb#L52-67
       def request_phase
