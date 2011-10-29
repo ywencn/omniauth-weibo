@@ -62,9 +62,7 @@ module OmniAuth
       end
 
       def raw_info
-        uid = @access_token.params[:id]
-        @raw_info ||= MultiJson.decode(access_token.get("http://api.t.sina.com.cn/users/show/#{uid}.json?source=#{options.consumer_key}").body)
-        puts @raw_info
+        @raw_info ||= MultiJson.decode(access_token.get('/account/verify_credentials.json').body)
       rescue ::Errno::ETIMEDOUT
         raise ::Timeout::Error
       end
