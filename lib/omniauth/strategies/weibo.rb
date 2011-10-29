@@ -38,6 +38,28 @@ module OmniAuth
       extra do
         { :raw_info => raw_info }
       end
+      
+      def callback_phase
+        raise OmniAuth::NoSessionError.new("Session Expired") if session['oauth'].nil?
+
+        request_token = ::OAuth::RequestToken.new(consumer, session['oauth'][name.to_s].delete('request_token'), session['oauth'][name.to_s].delete('request_secret'))
+
+        opts = {}
+        opts[:oauth_verifier] = request['oauth_verifier']
+
+        @access_token = request_token.get_access_token(opts)
+        super
+      rescue ::Timeout::Error => e
+        fail!(:timeout, e)
+      rescue ::Net::HTTPFatalError, ::OpenSSL::SSL::SSLError => e
+        fail!(:service_unavailable, e)
+      rescue ::OAuth::Unauthorized => e
+        fail!(:invalid_credentials, e)
+      rescue ::NoMethodError, ::MultiJson::DecodeError => e
+        fail!(:invalid_response, e)
+      rescue ::OmniAuth::NoSessionError => e
+        fail!(:session_expired, e)
+      end
 
       def raw_info
         @raw_info ||= MultiJson.decode(access_token.get('/account/verify_credentials.json').body)
