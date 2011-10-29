@@ -9,18 +9,16 @@ module OmniAuth
       def initialize(*args)
         super
         options.client_options = {
-                  :access_token_path => '/oauth/access_token',
-                  :authorize_path => '/oauth/authorize',
-                  :realm => 'OmniAuth',
-                  :request_token_path => '/oauth/request_token',
-                  :site => 'http://api.t.sina.com.cn',
-                }
+          :access_token_path => '/oauth/access_token',
+          :authorize_path => '/oauth/authorize',
+          :realm => 'OmniAuth',
+          :request_token_path => '/oauth/request_token',
+          :site => 'http://api.t.sina.com.cn',
+        }
       end
 
       def consumer
         consumer = ::OAuth::Consumer.new(options.consumer_key, options.consumer_secret, options.client_options)
-        consumer.http.open_timeout = options.open_timeout if options.open_timeout
-        consumer.http.read_timeout = options.read_timeout if options.read_timeout
         consumer
       end
 
@@ -43,31 +41,22 @@ module OmniAuth
       extra do
         { :raw_info => raw_info }
       end
-      
-      def callback_phase
-        raise OmniAuth::NoSessionError.new("Session Expired") if session['oauth'].nil?
 
-        request_token = ::OAuth::RequestToken.new(consumer, session['oauth'][name.to_s].delete('request_token'), session['oauth'][name.to_s].delete('request_secret'))
+      def request_phase
+        request_token = consumer.get_request_token(:oauth_callback => callback_url)
+        session['oauth'] ||= {}
+        session['oauth'][name.to_s] = {'callback_confirmed' => true, 'request_token' => request_token.token, 'request_secret' => request_token.secret}
 
-        opts = {}
-        if session['oauth'][name.to_s]['callback_confirmed']
-          opts[:oauth_verifier] = request['oauth_verifier']
+        if request_token.callback_confirmed?
+          redirect request_token.authorize_url(options[:authorize_params])
         else
-          opts[:oauth_callback] = callback_url
+          redirect request_token.authorize_url(options[:authorize_params].merge(:oauth_callback => callback_url))
         end
 
-        @access_token = request_token.get_access_token(opts)
-        super
       rescue ::Timeout::Error => e
         fail!(:timeout, e)
       rescue ::Net::HTTPFatalError, ::OpenSSL::SSL::SSLError => e
         fail!(:service_unavailable, e)
-      rescue ::OAuth::Unauthorized => e
-        fail!(:invalid_credentials, e)
-      rescue ::NoMethodError, ::MultiJson::DecodeError => e
-        fail!(:invalid_response, e)
-      rescue ::OmniAuth::NoSessionError => e
-        fail!(:session_expired, e)
       end
 
       def raw_info
