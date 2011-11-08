@@ -23,7 +23,7 @@ module OmniAuth
         consumer
       end
 
-      uid { access_token.params[:id] }
+      uid { raw_info["id"] }
 
       info do
         {
