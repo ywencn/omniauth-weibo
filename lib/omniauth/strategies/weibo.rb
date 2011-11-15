@@ -23,24 +23,24 @@ module OmniAuth
         consumer
       end
 
-      uid { raw_info["id"] }
+      uid { @raw_info["id"] }
 
       info do
         {
-          :nickname => raw_info['screen_name'],
-          :name => raw_info['name'],
-          :location => raw_info['location'],
-          :image => raw_info['profile_image_url'],
-          :description => raw_info['description'],
+          :nickname => @raw_info['screen_name'],
+          :name => @raw_info['name'],
+          :location => @raw_info['location'],
+          :image => @raw_info['profile_image_url'],
+          :description => @raw_info['description'],
           :urls => {
-            'Website' => raw_info['url'],
-            'Weibo' => 'http://weibo.com/' + raw_info['id'].to_s
+            'Website' => @raw_info['url'],
+            'Weibo' => 'http://weibo.com/' + @raw_info['id'].to_s
           }
         }
       end
 
       extra do
-        { :raw_info => raw_info }
+        { :raw_info => @raw_info }
       end
 
       #taken from https://github.com/intridea/omniauth/blob/0-3-stable/oa-oauth/lib/omniauth/strategies/oauth/tsina.rb#L52-67
@@ -59,6 +59,11 @@ module OmniAuth
         fail!(:timeout, e)
       rescue ::Net::HTTPFatalError, ::OpenSSL::SSL::SSLError => e
         fail!(:service_unavailable, e)
+      end
+      
+      def callback_phase
+        super
+        raw_info
       end
 
       def raw_info
