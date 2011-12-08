@@ -63,10 +63,6 @@ module OmniAuth
 
       def raw_info
         @raw_info ||= MultiJson.decode(access_token.get('/account/verify_credentials.json').body)
-        if @populated
-          puts @raw_info.inspect
-          puts
-        end
         @populated = true
         @raw_info 
       rescue ::Errno::ETIMEDOUT
